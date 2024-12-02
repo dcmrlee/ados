@@ -1,0 +1,22 @@
+---
+Language: Cpp
+BasedOnStyle: Google
+ColumnLimit: 100
+
+SortIncludes: true
+IncludeBlocks: Preserve
+
+IndentPPDirectives: BeforeHash
+BreakStringLiterals: false
+
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+AllowAllArgumentsOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+---
+Language: Proto
+BasedOnStyle: Google
+ColumnLimit: 0
+...
+
