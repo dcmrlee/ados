@@ -1,9 +1,19 @@
+#include <csignal>
 #include <iostream>
 
 #include "gflags/gflags.h"
 
 DEFINE_bool(h, false, "help");
 DEFINE_bool(v, false, "version");
+
+void SignalHandler(int sig)
+{
+  if (sig == SIGINT || sig == SIGTERM) {
+    std::cout << "Capture sig, Quit!" << std::endl;
+    return;
+  }
+  raise(sig);
+}
 
 void PrintVersion()
 {
@@ -39,5 +49,10 @@ void ParseCommandLineFlags(int32_t argc, char** argv)
 int32_t main(int32_t argc, char** argv)
 {
   ParseCommandLineFlags(argc, argv);
+  signal(SIGINT, SignalHandler);
+  signal(SIGTERM, SignalHandler);
+
+  std::cout << "Mipilot start!" << std::endl;
+  std::cout << "Mipilot exit!" << std::endl;
   return 0;
 }
