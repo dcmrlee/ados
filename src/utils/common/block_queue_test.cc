@@ -83,7 +83,6 @@ TEST(BlockQueueTest, MultipleThreadsEnqueueDequeue) {
   for (int i = 0; i < 1000; ++i) {
     ASSERT_EQ(i, results[i]);
   }
-
 }
 
 }  // namespace nxpilot::utils::common
