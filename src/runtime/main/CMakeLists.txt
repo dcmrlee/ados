@@ -22,12 +22,13 @@ target_sources(${CUR_TARGET_NAME} PRIVATE ${src})
 # Set include path of target
 target_include_directories(
   ${CUR_TARGET_NAME}
-  PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+  PRIVATE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/>)
 
 # Set link libraries of target
 target_link_libraries(
   ${CUR_TARGET_NAME}
-  PRIVATE gflags::gflags)
+  PRIVATE gflags::gflags
+          nxpilot::runtime::core)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   set_target_properties(${CUR_TARGET_NAME} PROPERTIES LINK_FLAGS "-s")

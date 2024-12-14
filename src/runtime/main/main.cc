@@ -5,6 +5,8 @@
 
 #include "gflags/gflags.h"
 
+#include "runtime/core/ados_core.h"
+
 DEFINE_bool(h, false, "help");
 DEFINE_bool(v, false, "version");
 
@@ -45,6 +47,12 @@ int32_t main(int32_t argc, char** argv) {
   signal(SIGTERM, SignalHandler);
 
   std::cout << "NXpilot start!" << std::endl;
+  try {
+    nxpilot::runtime::core::AdosCore core;
+  } catch (const std::exception& e) {
+    std::cout << "NXpilot run with exception and exit. " << e.what() << std::endl;
+    return -1;
+  }
   std::cout << "NXpilot exit!" << std::endl;
   return 0;
 }
