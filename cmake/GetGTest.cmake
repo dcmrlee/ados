@@ -1,4 +1,4 @@
-# Test for fun by lidacao
+# Copyright (C) 2024. All rights reserved.
 
 include(FetchContent)
 
@@ -22,10 +22,10 @@ else()
 endif()
 
 function(get_googletest)
-  FetchContent_MakeAvailable(googletest)
   FetchContent_GetProperties(googletest)
   if(NOT googletest_POPULATED)
     set(INSTALL_GTEST OFF)
+    FetchContent_MakeAvailable(googletest)
   endif()
 endfunction()
 

@@ -33,6 +33,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include(NamespaceTool)
 include(GetGFlags)
 include(GetGTest)
+include(GetYamlCpp)
 
 # Add subdirectory
 add_subdirectory(src)

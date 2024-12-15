@@ -1,4 +1,4 @@
-# Test for fun by lidacao
+# Copyright (C) 2024. All rights reserved.
 
 include(FetchContent)
 
@@ -25,8 +25,8 @@ function(get_gflags)
   FetchContent_MakeAvailable(gflags)
   FetchContent_GetProperties(gflags)
   if(NOT gflags_POPULATED)
-    set(BUILD_TESTING OFF)
-    add_subdirectory(${gflags_SOURCE_DIR} ${gflags_BINARY_DIR})
+    set(BUILD_TESTING OFF)  
+    add_subdirectory(${gflags_SOURCE_DIR} ${gflags_BINARY_DIR})  
   endif()
 endfunction()
 
