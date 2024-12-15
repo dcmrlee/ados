@@ -34,6 +34,7 @@ target_include_directories(
 target_link_libraries(
   ${CUR_TARGET_NAME}
   PUBLIC nxpilot::utils::common
+         yaml-cpp::yaml-cpp
 )
 
 # Add -Werror option
