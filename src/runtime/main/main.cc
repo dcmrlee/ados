@@ -7,6 +7,8 @@
 
 #include "runtime/core/ados_core.h"
 
+DEFINE_string(cfg_file_path, "", "config file path");
+
 DEFINE_bool(h, false, "help");
 DEFINE_bool(v, false, "version");
 
@@ -49,6 +51,8 @@ int32_t main(int32_t argc, char** argv) {
   std::cout << "NXpilot start!" << std::endl;
   try {
     nxpilot::runtime::core::AdosCore core;
+    nxpilot::runtime::core::AdosCore::Options options{.cfg_file_path = FLAGS_cfg_file_path};
+    core.Initialize(options);
   } catch (const std::exception& e) {
     std::cout << "NXpilot run with exception and exit. " << e.what() << std::endl;
     return -1;

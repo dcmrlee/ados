@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "utils/common/block_queue.h"
 #include "utils/common/log_util.h"
 #include "runtime/core/configurator/configurator_manager.h"
 
@@ -142,10 +141,23 @@ class AdosCore {
 
   const nxpilot::utils::common::Logger& GetLogger() const { return *logger_ptr_; }
 
+  void Initialize(const Options& options);
+  void Start();
+  void Shutdown();
+
+  State GetState() const { return state_; }
+
+private:
+  void EnterState(State state);
+
  private:
-  nxpilot::utils::common::BlockQueue<int> queue_;
   std::shared_ptr<nxpilot::utils::common::Logger> logger_ptr_;
+  Options options_;
+  State state_ = State::kPreInit;
+  
   std::vector<std::vector<HookTask>> hook_task_vec_array_;
+
+  nxpilot::runtime::core::configurator::ConfiguratorManager configurator_manager_;
 };
 
 }  // namespace nxpilot::runtime::core

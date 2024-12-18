@@ -3,6 +3,8 @@
 #pragma once
 
 #include <sys/syscall.h>
+#include <unistd.h>
+
 #include <chrono>
 #include <functional>
 #include <source_location>
@@ -30,16 +32,16 @@ class InternalLoggerImpl {
     static constexpr uint32_t kLvlNameArraySize = sizeof(kLvlNameArray) / sizeof(kLvlNameArray[0]);
     lvl = lvl >= kLvlNameArraySize ? (kLvlNameArraySize - 1) : lvl;
 
-    //
+    // Only for Linux
     thread_local size_t tid(syscall(SYS_gettid));
     thread_local auto now = std::chrono::system_clock::now();
     static const std::chrono::time_zone* current_zone = std::chrono::current_zone();
     AIMRT_ASSERT(current_zone != nullptr, "Cannot get time zone");
 
     thread_local std::chrono::zoned_time zt{current_zone, now};
-    std::string log_str = std::format("[{:%Y-%m-%d %H:%M:%S}][{}][{}][{}:{}:{} @{}]{} ", zt,
+    std::string log_str = std::format("[{:%Y-%m-%d %H:%M:%S}][{}][{}][{}:{}:{}]{} ", zt,
                                       kLvlNameArray[lvl], tid, file_name, line, column,
-                                      function_name, std::string_view(log_data, log_data_size));
+                                      std::string_view(log_data, log_data_size));
     fprintf(stderr, "%s\n", log_str.c_str());
   }
 };

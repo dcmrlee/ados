@@ -10,3 +10,5 @@
 - Module的配置包括输入、输出的channel，以及channel对应的backend具体实现
 - 可以有多个进程的配置，也就是多个Runtime，编译完之后就是多个进程，外围需要有个脚本串起来这些进程
 - 进程管理（保活、心跳、监控、数据）还需有一个或几个单独的进程，这些进程也是复用Runtime这套逻辑
+- 1 完善log，统一写文件（依赖executor，使用guard？？？）
+- 2 增加executor（main、和guard、普通线程池、还有定时执行器）
