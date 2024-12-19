@@ -5,8 +5,8 @@
 #include <atomic>
 #include <filesystem>
 
-#include "yaml-cpp/yaml.h"
 #include "utils/common/log_util.h"
+#include "yaml-cpp/yaml.h"
 
 namespace nxpilot::runtime::core::configurator {
 
@@ -40,7 +40,7 @@ class ConfiguratorManager {
 
   State GetState() const { return state_.load(); }
 
-  YAML::Node GetRootOptionsNode() const { return root_node_; }
+  YAML::Node GetRootOptionsNode() const { return root_options_node_; }
   YAML::Node GetNodeOptionsByKey(std::string_view key);
 
  private:
@@ -48,7 +48,6 @@ class ConfiguratorManager {
   Options options_;
   std::atomic<State> state_ = State::kPreInit;
   YAML::Node root_options_node_;
-
 };
 
 }  // namespace nxpilot::runtime::core::configurator

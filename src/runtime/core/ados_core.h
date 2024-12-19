@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
-#include "utils/common/log_util.h"
 #include "runtime/core/configurator/configurator_manager.h"
+#include "utils/common/log_util.h"
 
 namespace nxpilot::runtime::core {
 
@@ -147,14 +147,14 @@ class AdosCore {
 
   State GetState() const { return state_; }
 
-private:
+ private:
   void EnterState(State state);
 
  private:
   std::shared_ptr<nxpilot::utils::common::Logger> logger_ptr_;
   Options options_;
   State state_ = State::kPreInit;
-  
+
   std::vector<std::vector<HookTask>> hook_task_vec_array_;
 
   nxpilot::runtime::core::configurator::ConfiguratorManager configurator_manager_;

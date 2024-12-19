@@ -3,7 +3,7 @@
 #include "runtime/core/configurator/configurator_manager.h"
 
 namespace YAML {
-template<>
+template <>
 struct convert<nxpilot::runtime::core::configurator::ConfiguratorManager::Options> {
   using Options = nxpilot::runtime::core::configurator::ConfiguratorManager::Options;
 
@@ -29,8 +29,9 @@ struct convert<nxpilot::runtime::core::configurator::ConfiguratorManager::Option
 
 namespace nxpilot::runtime::core::configurator {
 
-void ConfiguratorManager::Initialize(const std::filesystem::path& cfg_file_path){
-  NXPILOT_CHECK_ERROR(std::atomic_exchange(&state_, State::kInit) == State::kPreInit,"Configurator manager can only be initialized once.");
+void ConfiguratorManager::Initialize(const std::filesystem::path& cfg_file_path) {
+  NXPILOT_CHECK_ERROR(std::atomic_exchange(&state_, State::kInit) == State::kPreInit,
+                      "Configurator manager can only be initialized once.");
   NXPILOT_CHECK_ERROR(!cfg_file_path.empty(), "Nxpilot start with no cfg file.");
 
   options_.cfg_path = std::filesystem::canonical(std::filesystem::absolute(cfg_file_path));
@@ -41,17 +42,21 @@ void ConfiguratorManager::Initialize(const std::filesystem::path& cfg_file_path)
 }
 
 void ConfiguratorManager::Start() {
-  NXPILOT_CHECK_ERROR(std::atomic_exchange(&state_, State::kStart) == State::kInit,"Method can only be called when state is 'Init'.");
+  NXPILOT_CHECK_ERROR(std::atomic_exchange(&state_, State::kStart) == State::kInit,
+                      "Method can only be called when state is 'Init'.");
   NXPILOT_INFO("ConfiguratorManager start completed");
 }
 
 void ConfiguratorManager::Shutdown() {
-  if (std::atomic_exchange(&state_, State::kShutdown) == State::kShutdown) { return; }
+  if (std::atomic_exchange(&state_, State::kShutdown) == State::kShutdown) {
+    return;
+  }
   NXPILOT_INFO("ConfiguratorManager shutdown");
 }
 
 YAML::Node ConfiguratorManager::GetNodeOptionsByKey(std::string_view key) {
-  NXPILOT_CHECK_ERROR(state_.load() == State::kInit, "Method can only be called when state is 'Init'.");
+  NXPILOT_CHECK_ERROR(state_.load() == State::kInit,
+                      "Method can only be called when state is 'Init'.");
   return root_options_node_[key];
 }
 

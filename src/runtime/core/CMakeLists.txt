@@ -14,6 +14,8 @@ set(CUR_TARGET_ALIAS_NAME ${CUR_SUPERIOR_NAMESPACE}::${CUR_DIR})
 # Set file collection
 file(GLOB_RECURSE head_files ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 file(GLOB_RECURSE src ${CMAKE_CURRENT_SOURCE_DIR}/*.cc)
+file(GLOB_RECURSE test_files ${CMAKE_CURRENT_SOURCE_DIR}/*_test.cc)
+list(REMOVE_ITEM src ${test_files})
 
 # Add target
 add_library(${CUR_TARGET_NAME} STATIC)
@@ -54,5 +56,10 @@ if(NXPILOT_INSTALL)
     LIBRARY DESTINATION lib
     FILE_SET HEADERS DESTINATION include/${INSTALL_PATH})
 endif()
+
+if(test_files)
+  add_gtest_target(TEST_TARGET ${CUR_TARGET_NAME} TEST_SRC ${test_files})
+endif()
+
 
 

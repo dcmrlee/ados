@@ -9,9 +9,7 @@ AdosCore::AdosCore() : logger_ptr_(std::make_shared<nxpilot::utils::common::Logg
   hook_task_vec_array_.resize(static_cast<uint32_t>(State::kMaxStateNum));
 }
 
-AdosCore::~AdosCore() {
-  hook_task_vec_array_.clear();
-}
+AdosCore::~AdosCore() { hook_task_vec_array_.clear(); }
 
 void AdosCore::Initialize(const Options& options) {
   EnterState(State::kPreInit);
@@ -23,7 +21,6 @@ void AdosCore::Initialize(const Options& options) {
   configurator_manager_.SetLogger(logger_ptr_);
   configurator_manager_.Initialize(options_.cfg_file_path);
   EnterState(State::kPostInitConfigurator);
-
 }
 
 void AdosCore::EnterState(State state) {

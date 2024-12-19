@@ -39,9 +39,9 @@ class InternalLoggerImpl {
     AIMRT_ASSERT(current_zone != nullptr, "Cannot get time zone");
 
     thread_local std::chrono::zoned_time zt{current_zone, now};
-    std::string log_str = std::format("[{:%Y-%m-%d %H:%M:%S}][{}][{}][{}:{}:{}]{} ", zt,
-                                      kLvlNameArray[lvl], tid, file_name, line, column,
-                                      std::string_view(log_data, log_data_size));
+    std::string log_str =
+        std::format("[{:%Y-%m-%d %H:%M:%S}][{}][{}][{}:{}:{}]{} ", zt, kLvlNameArray[lvl], tid,
+                    file_name, line, column, std::string_view(log_data, log_data_size));
     fprintf(stderr, "%s\n", log_str.c_str());
   }
 };
