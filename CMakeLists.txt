@@ -13,6 +13,7 @@ include(CMakeDependentOption)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=.")
 
 # Set default build type as Release
 if(NOT CMAKE_BUILD_TYPE)
