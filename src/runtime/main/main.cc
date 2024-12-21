@@ -12,9 +12,11 @@ DEFINE_string(cfg_file_path, "", "config file path");
 DEFINE_bool(h, false, "help");
 DEFINE_bool(v, false, "version");
 
+nxpilot::runtime::core::AdosCore* global_core_ptr = nullptr;
+
 void SignalHandler(int sig) {
-  if (sig == SIGINT || sig == SIGTERM) {
-    std::cout << "Capture sig, Quit!" << std::endl;
+  if (global_core_ptr && (sig == SIGINT || sig == SIGTERM)) {
+    global_core_ptr->Shutdown();
     return;
   }
   raise(sig);
@@ -51,8 +53,13 @@ int32_t main(int32_t argc, char** argv) {
   std::cout << "NXpilot start!" << std::endl;
   try {
     nxpilot::runtime::core::AdosCore core;
+    global_core_ptr = &core;
+
     nxpilot::runtime::core::AdosCore::Options options{.cfg_file_path = FLAGS_cfg_file_path};
     core.Initialize(options);
+    core.Start();
+    core.Shutdown();
+    global_core_ptr = nullptr;
   } catch (const std::exception& e) {
     std::cout << "NXpilot run with exception and exit. " << e.what() << std::endl;
     return -1;

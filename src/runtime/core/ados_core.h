@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <future>
 #include <string>
 #include <vector>
 
@@ -150,11 +151,17 @@ class AdosCore {
 
  private:
   void EnterState(State state);
+  void StartImpl();
+  void ShutdownImpl();
 
  private:
   std::shared_ptr<nxpilot::utils::common::Logger> logger_ptr_;
   Options options_;
   State state_ = State::kPreInit;
+
+  std::atomic_bool shutdown_flag_ = false;
+  std::promise<void> shutdown_promise_;
+  std::atomic_bool shutdown_impl_flag_ = false;
 
   std::vector<std::vector<HookTask>> hook_task_vec_array_;
 
