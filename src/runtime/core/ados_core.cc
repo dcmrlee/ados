@@ -21,6 +21,12 @@ void AdosCore::Initialize(const Options& options) {
   configurator_manager_.SetLogger(logger_ptr_);
   configurator_manager_.Initialize(options_.cfg_file_path);
   EnterState(State::kPostInitConfigurator);
+
+  // Init main executor
+  EnterState(State::kPreInitMainThread);
+  main_thread_executor_.SetLogger(logger_ptr_);
+  main_thread_executor_.Initialize(configurator_manager_.GetNodeOptionsByKey("main_thread"));
+  EnterState(State::kPostInitMainThread);
 }
 
 void AdosCore::EnterState(State state) {

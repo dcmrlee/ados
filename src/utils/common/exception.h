@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <format>
 #include <string>
 
 namespace nxpilot::utils::common {

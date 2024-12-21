@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "runtime/core/configurator/configurator_manager.h"
+#include "runtime/core/executor/main_thread_executor.h"
 #include "utils/common/log_util.h"
 
 namespace nxpilot::runtime::core {
@@ -158,6 +159,7 @@ class AdosCore {
   std::vector<std::vector<HookTask>> hook_task_vec_array_;
 
   nxpilot::runtime::core::configurator::ConfiguratorManager configurator_manager_;
+  nxpilot::runtime::core::executor::MainThreadExecutor main_thread_executor_;
 };
 
 }  // namespace nxpilot::runtime::core
