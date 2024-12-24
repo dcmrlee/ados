@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "runtime/core/configurator/configurator_manager.h"
+#include "runtime/core/executor/guard_thread_executor.h"
 #include "runtime/core/executor/main_thread_executor.h"
 #include "utils/common/log_util.h"
 
@@ -167,6 +168,7 @@ class AdosCore {
 
   nxpilot::runtime::core::configurator::ConfiguratorManager configurator_manager_;
   nxpilot::runtime::core::executor::MainThreadExecutor main_thread_executor_;
+  nxpilot::runtime::core::executor::GuardThreadExecutor guard_thread_executor_;
 };
 
 }  // namespace nxpilot::runtime::core

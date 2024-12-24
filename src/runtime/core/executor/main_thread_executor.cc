@@ -49,9 +49,9 @@ void MainThreadExecutor::Initialize(YAML::Node options_node) {
   }
 
   try {
-    nxpilot::utils::common::SetNameForCurrentThread(options_.name);
-    nxpilot::utils::common::BindCpuForCurrentThread(options_.thread_bind_cpu);
-    nxpilot::utils::common::SetCpuSchedForCurrentThread(options_.thread_sched_policy);
+    nxpilot::utils::common::ThreadTool::SetNameForCurrentThread(options_.name);
+    nxpilot::utils::common::ThreadTool::BindCpuForCurrentThread(options_.thread_bind_cpu);
+    nxpilot::utils::common::ThreadTool::SetCpuSchedForCurrentThread(options_.thread_sched_policy);
   } catch (const std::exception& e) {
     NXPILOT_ERROR("Set thread policy for main thread get exception, {}", e.what());
   }

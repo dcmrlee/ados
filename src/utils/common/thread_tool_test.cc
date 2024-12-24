@@ -33,38 +33,39 @@ std::vector<uint32_t> GetCurrentThreadAffinity() {
 
 TEST(ThreadToolTest, SetNameForCurrentThread) {
   std::string short_name = "short_name";
-  SetNameForCurrentThread(short_name);
+  ThreadTool::SetNameForCurrentThread(short_name);
   EXPECT_EQ(GetCurrentThreadName(), short_name);
 
   std::string long_name = "long_thread_name_more_than_15_characters_long";
-  SetNameForCurrentThread(long_name);
+  ThreadTool::SetNameForCurrentThread(long_name);
   std::string expected_name = "long_thr.._long";
   EXPECT_EQ(GetCurrentThreadName(), expected_name);
 }
 
 TEST(ThreadToolTest, BindCpuForCurrentThread) {
   std::vector<uint32_t> cpu_set = {0, 1};
-  EXPECT_NO_THROW(BindCpuForCurrentThread(cpu_set));
+  EXPECT_NO_THROW(ThreadTool::BindCpuForCurrentThread(cpu_set));
   EXPECT_EQ(cpu_set, GetCurrentThreadAffinity());
 
   std::vector<uint32_t> empty_cpu_set = {};
-  EXPECT_NO_THROW(BindCpuForCurrentThread(empty_cpu_set));
+  EXPECT_NO_THROW(ThreadTool::BindCpuForCurrentThread(empty_cpu_set));
 
-  EXPECT_ANY_THROW(BindCpuForCurrentThread({10000}));
+  EXPECT_ANY_THROW(ThreadTool::BindCpuForCurrentThread({10000}));
 }
 
 // Need Root Permission
 TEST(ThreadToolTest, SetCpuSchedForCurrentThread) {
-  EXPECT_NO_THROW(SetCpuSchedForCurrentThread(""));
-  EXPECT_NO_THROW(SetCpuSchedForCurrentThread("SCHED_OTHER"));
-  EXPECT_NO_THROW(SetCpuSchedForCurrentThread("SCHED_FIFO:50"));
-  EXPECT_NO_THROW(SetCpuSchedForCurrentThread("SCHED_RR:80"));
+  EXPECT_NO_THROW(ThreadTool::SetCpuSchedForCurrentThread(""));
+  EXPECT_NO_THROW(ThreadTool::SetCpuSchedForCurrentThread("SCHED_OTHER"));
+  EXPECT_NO_THROW(ThreadTool::SetCpuSchedForCurrentThread("SCHED_FIFO:50"));
+  EXPECT_NO_THROW(ThreadTool::SetCpuSchedForCurrentThread("SCHED_RR:80"));
 
-  EXPECT_ANY_THROW(SetCpuSchedForCurrentThread("SCHED_INVALID"));
-  EXPECT_ANY_THROW(SetCpuSchedForCurrentThread("SCHED_FIFO:99999"));
+  EXPECT_ANY_THROW(ThreadTool::SetCpuSchedForCurrentThread("SCHED_INVALID"));
+  EXPECT_ANY_THROW(ThreadTool::SetCpuSchedForCurrentThread("SCHED_FIFO:99999"));
 
-  EXPECT_THROW(SetCpuSchedForCurrentThread("SCHED_FIFO"), nxpilot::utils::common::NxpilotException);
-  EXPECT_THROW(SetCpuSchedForCurrentThread("SCHED_FIFO:"),
+  EXPECT_THROW(ThreadTool::SetCpuSchedForCurrentThread("SCHED_FIFO"),
+               nxpilot::utils::common::NxpilotException);
+  EXPECT_THROW(ThreadTool::SetCpuSchedForCurrentThread("SCHED_FIFO:"),
                nxpilot::utils::common::NxpilotException);
 }
 

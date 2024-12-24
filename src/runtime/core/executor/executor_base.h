@@ -11,7 +11,7 @@ namespace nxpilot::runtime::core::executor {
 
 class ExecutorBase {
  public:
-  using Task = std::function<void(void*)>;
+  using Task = std::function<void(void)>;
   ExecutorBase() = default;
   virtual ~ExecutorBase() = default;
   ExecutorBase(const ExecutorBase&) = delete;

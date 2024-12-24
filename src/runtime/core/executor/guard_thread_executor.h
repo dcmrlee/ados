@@ -3,7 +3,10 @@
 #pragma once
 
 #include <atomic>
+#include <condition_variable>
 #include <functional>
+#include <mutex>
+#include <queue>
 #include <thread>
 
 #include "runtime/core/executor/executor_base.h"
@@ -12,15 +15,16 @@
 
 namespace nxpilot::runtime::core::executor {
 
-class MainThreadExecutor : public ExecutorBase {
+class GuardThreadExecutor : public ExecutorBase {
  public:
-  MainThreadExecutor() : logger_ptr_(std::make_shared<nxpilot::utils::common::Logger>()) {}
-  ~MainThreadExecutor() = default;
+  GuardThreadExecutor() : logger_ptr_(std::make_shared<nxpilot::utils::common::Logger>()) {}
+  ~GuardThreadExecutor() = default;
 
   struct Options {
-    std::string name = "nxpilot_main";
+    std::string name = "nxpilot_guard";
     std::string thread_sched_policy;
     std::vector<uint32_t> thread_bind_cpu;
+    uint32_t queue_threshold = 10000;
   };
 
   enum class State : uint32_t {
@@ -52,15 +56,22 @@ class MainThreadExecutor : public ExecutorBase {
   std::chrono::system_clock::time_point Now() const noexcept override;
   void ExecuteAt(std::chrono::system_clock::time_point tp, Task&& task) noexcept override;
 
-  size_t CurrentTaskNum() noexcept override { return 1; }
+  size_t CurrentTaskNum() noexcept override { return queue_task_num_.load(); }
 
  private:
   std::shared_ptr<nxpilot::utils::common::Logger> logger_ptr_;
   Options options_;
   std::atomic<State> state_ = State::kPreInit;
 
-  std::thread::id main_thread_id_;
-  std::string_view type_ = "main_thread";
+  std::thread::id thread_id_;
+  std::string_view type_ = "guard_thread";
+
+  uint32_t queue_warn_threshold_;
+  std::atomic_uint32_t queue_task_num_ = 0;
+  std::mutex mutex_;
+  std::condition_variable cond_;
+  std::queue<Task> queue_;
+  std::unique_ptr<std::thread> thread_ptr_;
 };
 
 }  // namespace nxpilot::runtime::core::executor
