@@ -53,7 +53,7 @@ void MainThreadExecutor::Initialize(YAML::Node options_node) {
     nxpilot::utils::common::BindCpuForCurrentThread(options_.thread_bind_cpu);
     nxpilot::utils::common::SetCpuSchedForCurrentThread(options_.thread_sched_policy);
   } catch (const std::exception& e) {
-    NXPILOT_WARN("Set thread policy for main thread get exception, {}", e.what());
+    NXPILOT_ERROR("Set thread policy for main thread get exception, {}", e.what());
   }
 
   main_thread_id_ = std::this_thread::get_id();

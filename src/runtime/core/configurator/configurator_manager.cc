@@ -57,7 +57,7 @@ void ConfiguratorManager::Shutdown() {
 YAML::Node ConfiguratorManager::GetNodeOptionsByKey(std::string_view key) {
   NXPILOT_CHECK_ERROR(state_.load() == State::kInit,
                       "Method can only be called when state is 'Init'.");
-  return root_options_node_[key];
+  return root_options_node_["nxpilot"][key];
 }
 
 }  // namespace nxpilot::runtime::core::configurator
