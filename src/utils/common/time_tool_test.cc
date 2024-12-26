@@ -2,7 +2,7 @@
 
 #include "gtest/gtest.h"
 
-#include "utils/common/time_util.h"
+#include "utils/common/time_tool.h"
 
 namespace nxpilot::utils::common {
 

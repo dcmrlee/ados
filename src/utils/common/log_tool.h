@@ -11,7 +11,7 @@
 #include <string>
 
 #include "utils/common/exception.h"
-#include "utils/common/time_util.h"
+#include "utils/common/time_tool.h"
 
 namespace nxpilot::utils::common {
 
@@ -22,11 +22,10 @@ constexpr uint32_t kLogLevelWarn = 3;
 constexpr uint32_t kLogLevelError = 4;
 constexpr uint32_t kLogLevelFatal = 5;
 
-class InternalLoggerImpl {
+class LogFormatter {
  public:
-  static uint32_t GetLogLevel() { return 0; }
-  static void Log(uint32_t lvl, uint32_t line, uint32_t column, const char* file_name,
-                  const char* function_name, const char* log_data, size_t log_data_size) {
+  static std::string Format(uint32_t lvl, uint32_t line, uint32_t column, const char* file_name,
+                            const char* function_name, const char* log_data, size_t log_data_size) {
     static constexpr std::string_view kLvlNameArray[] = {"Trace", "Debug", "Info",
                                                          "Warn",  "Error", "Fatal"};
     static constexpr uint32_t kLvlNameArraySize = sizeof(kLvlNameArray) / sizeof(kLvlNameArray[0]);
@@ -39,9 +38,18 @@ class InternalLoggerImpl {
     AIMRT_ASSERT(current_zone != nullptr, "Cannot get time zone");
 
     thread_local std::chrono::zoned_time zt{current_zone, now};
-    std::string log_str =
-        std::format("[{:%Y-%m-%d %H:%M:%S}][{}][{}][{}:{}:{}]{} ", zt, kLvlNameArray[lvl], tid,
-                    file_name, line, column, std::string_view(log_data, log_data_size));
+    return std::format("[{:%Y-%m-%d %H:%M:%S}][{}][{}][{}:{}:{}]{} ", zt, kLvlNameArray[lvl], tid,
+                       file_name, line, column, std::string_view(log_data, log_data_size));
+  }
+};
+
+class InternalLoggerImpl {
+ public:
+  static uint32_t GetLogLevel() { return 0; }
+  static void Log(uint32_t lvl, uint32_t line, uint32_t column, const char* file_name,
+                  const char* function_name, const char* log_data, size_t log_data_size) {
+    std::string log_str(
+        LogFormatter::Format(lvl, line, column, file_name, function_name, log_data, log_data_size));
     fprintf(stderr, "%s\n", log_str.c_str());
   }
 };

@@ -10,7 +10,6 @@ struct convert<nxpilot::runtime::core::executor::MainThreadExecutor::Options> {
 
   static Node encode(const Options& rhs) {
     Node node;
-    node["name"] = rhs.name;
     node["thread_sched_policy"] = rhs.thread_sched_policy;
     node["thread_bind_cpu"] = rhs.thread_bind_cpu;
 
@@ -20,10 +19,6 @@ struct convert<nxpilot::runtime::core::executor::MainThreadExecutor::Options> {
   static bool decode(const Node& node, Options& rhs) {
     if (!node.IsMap()) {
       return false;
-    }
-
-    if (node["name"]) {
-      rhs.name = node["name"].as<std::string>();
     }
 
     if (node["thread_sched_policy"]) {
@@ -41,19 +36,21 @@ struct convert<nxpilot::runtime::core::executor::MainThreadExecutor::Options> {
 
 namespace nxpilot::runtime::core::executor {
 
-void MainThreadExecutor::Initialize(YAML::Node options_node) {
+void MainThreadExecutor::Initialize(std::string_view name, YAML::Node options_node) {
   NXPILOT_CHECK_ERROR(std::atomic_exchange(&state_, State::kInit) == State::kPreInit,
                       "MainThreadExecutor can only be initialized once.");
+  name_ = std::string(name);
+
   if (options_node && !options_node.IsNull()) {
     options_ = options_node.as<Options>();
   }
 
   try {
-    nxpilot::utils::common::ThreadTool::SetNameForCurrentThread(options_.name);
-    nxpilot::utils::common::ThreadTool::BindCpuForCurrentThread(options_.thread_bind_cpu);
-    nxpilot::utils::common::ThreadTool::SetCpuSchedForCurrentThread(options_.thread_sched_policy);
+    nxpilot::utils::common::SetNameForCurrentThread(name_);
+    nxpilot::utils::common::BindCpuForCurrentThread(options_.thread_bind_cpu);
+    nxpilot::utils::common::SetCpuSchedForCurrentThread(options_.thread_sched_policy);
   } catch (const std::exception& e) {
-    NXPILOT_ERROR("Set thread policy for main thread get exception, {}", e.what());
+    NXPILOT_ERROR("Set thread policy for MainThreadExecutor get exception, {}", e.what());
   }
 
   main_thread_id_ = std::this_thread::get_id();
@@ -76,16 +73,16 @@ void MainThreadExecutor::Shutdown() {
 }
 
 void MainThreadExecutor::Execute(Task&& task) noexcept {
-  NXPILOT_ERROR("Main thread executor does not impl execute");
+  NXPILOT_ERROR("MainThreadExecutor does not impl execute");
 }
 
 std::chrono::system_clock::time_point MainThreadExecutor::Now() const noexcept {
-  NXPILOT_ERROR("Main thread executor does not support timer schedule");
+  NXPILOT_ERROR("MainThreadExecutor does not support timer schedule");
   return std::chrono::system_clock::time_point();
 }
 
 void MainThreadExecutor::ExecuteAt(std::chrono::system_clock::time_point tp, Task&& task) noexcept {
-  NXPILOT_ERROR("Main thread executor does not support timer schedule");
+  NXPILOT_ERROR("MainThreadExecutor does not support timer schedule");
 }
 
 }  // namespace nxpilot::runtime::core::executor

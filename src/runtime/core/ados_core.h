@@ -7,9 +7,8 @@
 #include <vector>
 
 #include "runtime/core/configurator/configurator_manager.h"
-#include "runtime/core/executor/guard_thread_executor.h"
-#include "runtime/core/executor/main_thread_executor.h"
-#include "utils/common/log_util.h"
+#include "runtime/core/executor/executor_manager.h"
+#include "utils/common/log_tool.h"
 
 namespace nxpilot::runtime::core {
 
@@ -33,12 +32,6 @@ class AdosCore {
 
     kPreInitPlugin,
     kPostInitPlugin,
-
-    kPreInitMainThread,
-    kPostInitMainThread,
-
-    kPreInitGuardThread,
-    kPostInitGuardThread,
 
     kPreInitExecutor,
     kPostInitExecutor,
@@ -70,12 +63,6 @@ class AdosCore {
 
     kPreStartPlugin,
     kPostStartPlugin,
-
-    kPreStartMainThread,
-    kPostStartMainThread,
-
-    kPreStartGuardThread,
-    kPostStartGuardThread,
 
     kPreStartExecutor,
     kPostStartExecutor,
@@ -123,12 +110,6 @@ class AdosCore {
     kPreShutdownExecutor,
     kPostShutdownExecutor,
 
-    kPreShutdownGuardThread,
-    kPostShutdownGuardThread,
-
-    kPreShutdownMainThread,
-    kPostShutdownMainThread,
-
     kPreShutdownPlugin,
     kPostShutdownPlugin,
 
@@ -167,8 +148,7 @@ class AdosCore {
   std::vector<std::vector<HookTask>> hook_task_vec_array_;
 
   nxpilot::runtime::core::configurator::ConfiguratorManager configurator_manager_;
-  nxpilot::runtime::core::executor::MainThreadExecutor main_thread_executor_;
-  nxpilot::runtime::core::executor::GuardThreadExecutor guard_thread_executor_;
+  nxpilot::runtime::core::executor::ExecutorManager executor_manager_;
 };
 
 }  // namespace nxpilot::runtime::core

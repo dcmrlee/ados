@@ -7,7 +7,7 @@
 #include <thread>
 
 #include "runtime/core/executor/executor_base.h"
-#include "utils/common/log_util.h"
+#include "utils/common/log_tool.h"
 #include "yaml-cpp/yaml.h"
 
 namespace nxpilot::runtime::core::executor {
@@ -35,14 +35,14 @@ class MainThreadExecutor : public ExecutorBase {
     logger_ptr_ = logger_ptr;
   }
 
-  void Initialize(YAML::Node options_node);
-  void Start();
-  void Shutdown();
+  void Initialize(std::string_view name, YAML::Node options_node) override;
+  void Start() override;
+  void Shutdown() override;
 
   State GetState() const { return state_.load(); }
 
   std::string_view Type() const noexcept override { return type_; }
-  std::string_view Name() const noexcept override { return options_.name; }
+  std::string_view Name() const noexcept override { return name_; }
 
   bool ThreadSafe() const noexcept override { return true; }
 
@@ -59,6 +59,7 @@ class MainThreadExecutor : public ExecutorBase {
   Options options_;
   std::atomic<State> state_ = State::kPreInit;
 
+  std::string name_;
   std::thread::id main_thread_id_;
   std::string_view type_ = "main_thread";
 };

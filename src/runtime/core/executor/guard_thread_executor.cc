@@ -10,7 +10,6 @@ struct convert<nxpilot::runtime::core::executor::GuardThreadExecutor::Options> {
 
   static Node encode(const Options& rhs) {
     Node node;
-    node["name"] = rhs.name;
     node["thread_sched_policy"] = rhs.thread_sched_policy;
     node["thread_bind_cpu"] = rhs.thread_bind_cpu;
     node["queue_threshold"] = rhs.queue_threshold;
@@ -21,10 +20,6 @@ struct convert<nxpilot::runtime::core::executor::GuardThreadExecutor::Options> {
   static bool decode(const Node& node, Options& rhs) {
     if (!node.IsMap()) {
       return false;
-    }
-
-    if (node["name"]) {
-      rhs.name = node["name"].as<std::string>();
     }
 
     if (node["thread_sched_policy"]) {
@@ -46,9 +41,11 @@ struct convert<nxpilot::runtime::core::executor::GuardThreadExecutor::Options> {
 
 namespace nxpilot::runtime::core::executor {
 
-void GuardThreadExecutor::Initialize(YAML::Node options_node) {
+void GuardThreadExecutor::Initialize(std::string_view name, YAML::Node options_node) {
   NXPILOT_CHECK_ERROR(std::atomic_exchange(&state_, State::kInit) == State::kPreInit,
                       "GuardThreadExecutor can only be initialized once.");
+  name_ = std::string(name);
+
   if (options_node && !options_node.IsNull()) {
     options_ = options_node.as<Options>();
   }
@@ -59,11 +56,11 @@ void GuardThreadExecutor::Initialize(YAML::Node options_node) {
     thread_id_ = std::this_thread::get_id();
 
     try {
-      nxpilot::utils::common::ThreadTool::SetNameForCurrentThread(options_.name);
-      nxpilot::utils::common::ThreadTool::BindCpuForCurrentThread(options_.thread_bind_cpu);
-      nxpilot::utils::common::ThreadTool::SetCpuSchedForCurrentThread(options_.thread_sched_policy);
+      nxpilot::utils::common::SetNameForCurrentThread(name_);
+      nxpilot::utils::common::BindCpuForCurrentThread(options_.thread_bind_cpu);
+      nxpilot::utils::common::SetCpuSchedForCurrentThread(options_.thread_sched_policy);
     } catch (const std::exception& e) {
-      NXPILOT_ERROR("Set thread policy for guard thread get exception, {}", e.what());
+      NXPILOT_ERROR("Set thread policy for GuardThreadExecutor get exception, {}", e.what());
     }
 
     while (state_.load() != State::kShutdown) {
@@ -80,7 +77,7 @@ void GuardThreadExecutor::Initialize(YAML::Node options_node) {
           task();
           --queue_task_num_;
         } catch (const std::exception& e) {
-          NXPILOT_FATAL("Guard thread executor run task get exception, {}", e.what());
+          NXPILOT_FATAL("GuardThreadExecutor run task get exception, {}", e.what());
         }
 
         tmp_queue.pop();
@@ -94,7 +91,7 @@ void GuardThreadExecutor::Initialize(YAML::Node options_node) {
         task();
         --queue_task_num_;
       } catch (const std::exception& e) {
-        NXPILOT_FATAL("Guard thread executor run task get exception, {}", e.what());
+        NXPILOT_FATAL("GuardThreadExecutor run task get exception, {}", e.what());
       }
       queue_.pop();
     }
@@ -130,14 +127,14 @@ void GuardThreadExecutor::Shutdown() {
 
 void GuardThreadExecutor::Execute(Task&& task) noexcept {
   if (state_.load() != State::kStart) [[unlikely]] {
-    NXPILOT_ERROR("Guard thread executor can only execute task when state is 'Start'.");
+    NXPILOT_ERROR("GuardThreadExecutor can only execute task when state is 'Start'.");
   }
 
   uint32_t cur_queue_task_num = ++queue_task_num_;
 
   if (cur_queue_task_num > options_.queue_threshold) [[unlikely]] {
     NXPILOT_ERROR(
-        "The number of tasks in the guard thread executor has reached the threshold {}, the task will not be delivered.",
+        "The number of tasks in the GuardThreadExecutor has reached the threshold {}, the task will not be delivered.",
         options_.queue_threshold);
     --queue_task_num_;
     return;
@@ -145,7 +142,7 @@ void GuardThreadExecutor::Execute(Task&& task) noexcept {
 
   if (cur_queue_task_num > queue_warn_threshold_) [[unlikely]] {
     NXPILOT_WARN(
-        "The number of tasks in the guard thread executor is about to reached the threshold {}/{}",
+        "The number of tasks in the GuardThreadExecutor is about to reached the threshold {}/{}",
         cur_queue_task_num, options_.queue_threshold);
   }
 
@@ -155,13 +152,13 @@ void GuardThreadExecutor::Execute(Task&& task) noexcept {
 }
 
 std::chrono::system_clock::time_point GuardThreadExecutor::Now() const noexcept {
-  NXPILOT_ERROR("Guard thread executor does not support timer schedule");
+  NXPILOT_ERROR("GuardThreadExecutor does not support timer schedule");
   return std::chrono::system_clock::time_point();
 }
 
 void GuardThreadExecutor::ExecuteAt(std::chrono::system_clock::time_point tp,
                                     Task&& task) noexcept {
-  NXPILOT_ERROR("Guard thread executor does not support timer schedule");
+  NXPILOT_ERROR("GuardThreadExecutor does not support timer schedule");
 }
 
 }  // namespace nxpilot::runtime::core::executor

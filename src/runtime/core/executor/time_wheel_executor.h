@@ -3,10 +3,7 @@
 #pragma once
 
 #include <atomic>
-#include <condition_variable>
 #include <functional>
-#include <mutex>
-#include <queue>
 #include <thread>
 
 #include "runtime/core/executor/executor_base.h"
@@ -15,15 +12,17 @@
 
 namespace nxpilot::runtime::core::executor {
 
-class GuardThreadExecutor : public ExecutorBase {
+class TimeWheelExecutor : public ExecutorBase {
  public:
-  GuardThreadExecutor() : logger_ptr_(std::make_shared<nxpilot::utils::common::Logger>()) {}
-  ~GuardThreadExecutor() = default;
+  TimeWheelExecutor() : logger_ptr_(std::make_shared<nxpilot::utils::common::Logger>()) {}
+  ~TimeWheelExecutor() = default;
 
   struct Options {
+    std::string bind_executor;
     std::string thread_sched_policy;
     std::vector<uint32_t> thread_bind_cpu;
-    uint32_t queue_threshold = 10000;
+    std::chrono::nanoseconds dt = std::chrono::microseconds(1000);
+    std::vector<size_t> wheel_size = {1000, 600};
   };
 
   enum class State : uint32_t {
@@ -51,11 +50,11 @@ class GuardThreadExecutor : public ExecutorBase {
 
   void Execute(Task&& task) noexcept override;
 
-  bool SupportTimerSchedule() const noexcept override { return false; }
+  bool SupportTimerSchedule() const noexcept override { return true; }
   std::chrono::system_clock::time_point Now() const noexcept override;
   void ExecuteAt(std::chrono::system_clock::time_point tp, Task&& task) noexcept override;
 
-  size_t CurrentTaskNum() noexcept override { return queue_task_num_.load(); }
+  size_t CurrentTaskNum() noexcept override { return 1; }
 
  private:
   std::shared_ptr<nxpilot::utils::common::Logger> logger_ptr_;
@@ -64,14 +63,7 @@ class GuardThreadExecutor : public ExecutorBase {
 
   std::string name_;
   std::thread::id thread_id_;
-  std::string_view type_ = "guard_thread";
-
-  uint32_t queue_warn_threshold_;
-  std::atomic_uint32_t queue_task_num_ = 0;
-  std::mutex mutex_;
-  std::condition_variable cond_;
-  std::queue<Task> queue_;
-  std::unique_ptr<std::thread> thread_ptr_;
+  std::string_view type_ = "time_wheel";
 };
 
 }  // namespace nxpilot::runtime::core::executor

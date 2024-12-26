@@ -29,19 +29,11 @@ void AdosCore::Initialize(const Options& options) {
   configurator_manager_.Initialize(options_.cfg_file_path);
   EnterState(State::kPostInitConfigurator);
 
-  // Init main executor
-  EnterState(State::kPreInitMainThread);
-  main_thread_executor_.SetLogger(logger_ptr_);
-  main_thread_executor_.Initialize(
-      configurator_manager_.GetNodeOptionsByKey(main_thread_executor_.Type()));
-  EnterState(State::kPostInitMainThread);
-
-  // Init guard executor
-  EnterState(State::kPreInitGuardThread);
-  guard_thread_executor_.SetLogger(logger_ptr_);
-  guard_thread_executor_.Initialize(
-      configurator_manager_.GetNodeOptionsByKey(guard_thread_executor_.Type()));
-  EnterState(State::kPostInitGuardThread);
+  // Init Executor
+  EnterState(State::kPreInitExecutor);
+  executor_manager_.SetLogger(logger_ptr_);
+  executor_manager_.Initialize(configurator_manager_.GetNodeOptionsByKey("executor"));
+  EnterState(State::kPostInitExecutor);
 
   EnterState(State::kPostInit);
 }
@@ -76,13 +68,9 @@ void AdosCore::StartImpl() {
   configurator_manager_.Start();
   EnterState(State::kPostStartConfigurator);
 
-  EnterState(State::kPreStartMainThread);
-  main_thread_executor_.Start();
-  EnterState(State::kPostStartMainThread);
-
-  EnterState(State::kPreStartGuardThread);
-  guard_thread_executor_.Start();
-  EnterState(State::kPostStartGuardThread);
+  EnterState(State::kPreStartExecutor);
+  executor_manager_.Start();
+  EnterState(State::kPostStartExecutor);
 
   EnterState(State::kPostStart);
 }
@@ -92,13 +80,9 @@ void AdosCore::ShutdownImpl() {
 
   EnterState(State::kPreShutdown);
 
-  EnterState(State::kPreShutdownGuardThread);
-  guard_thread_executor_.Shutdown();
-  EnterState(State::kPostShutdownGuardThread);
-
-  EnterState(State::kPreShutdownMainThread);
-  main_thread_executor_.Shutdown();
-  EnterState(State::kPostShutdownMainThread);
+  EnterState(State::kPreShutdownExecutor);
+  executor_manager_.Shutdown();
+  EnterState(State::kPostShutdownExecutor);
 
   EnterState(State::kPreShutdownConfigurator);
   configurator_manager_.Shutdown();

@@ -17,6 +17,10 @@ class ExecutorBase {
   ExecutorBase(const ExecutorBase&) = delete;
   ExecutorBase& operator=(const ExecutorBase&) = delete;
 
+  virtual void Initialize(std::string_view name, YAML::Node options_node) = 0;
+  virtual void Start() = 0;
+  virtual void Shutdown() = 0;
+
   virtual std::string_view Type() const noexcept = 0;
   virtual std::string_view Name() const noexcept = 0;
 
